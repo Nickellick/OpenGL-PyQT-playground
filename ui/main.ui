@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>OpenGL PyQT Playground</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QOpenGLWidget" name="opengl_widget">

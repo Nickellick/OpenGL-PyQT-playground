@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file './ui/main.ui'
 #
-# Created by: PyQt5 UI code generator 5.14.1
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -79,7 +79,7 @@ class Ui_main_window(object):
 
     def retranslateUi(self, main_window):
         _translate = QtCore.QCoreApplication.translate
-        main_window.setWindowTitle(_translate("main_window", "MainWindow"))
+        main_window.setWindowTitle(_translate("main_window", "OpenGL PyQT Playground"))
         self.box_button.setText(_translate("main_window", "Box"))
         self.sphere_button.setText(_translate("main_window", "Sphere"))
         self.pyramyd_button.setText(_translate("main_window", "Pyramid"))
