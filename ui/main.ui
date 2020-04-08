@@ -218,6 +218,19 @@
      <bool>false</bool>
     </property>
    </widget>
+   <widget class="QCheckBox" name="lighting_checkbox">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>530</y>
+      <width>171</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enable Lighting</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="enabled">
