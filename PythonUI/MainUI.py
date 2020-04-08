@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file './ui/main.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.3
+# Created by: PyQt5 UI code generator 5.14.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -27,9 +27,9 @@ class Ui_main_window(object):
         self.sphere_button = QtWidgets.QPushButton(self.centralwidget)
         self.sphere_button.setGeometry(QtCore.QRect(110, 530, 89, 25))
         self.sphere_button.setObjectName("sphere_button")
-        self.pyramyd_button = QtWidgets.QPushButton(self.centralwidget)
-        self.pyramyd_button.setGeometry(QtCore.QRect(210, 530, 89, 25))
-        self.pyramyd_button.setObjectName("pyramyd_button")
+        self.pyramid_button = QtWidgets.QPushButton(self.centralwidget)
+        self.pyramid_button.setGeometry(QtCore.QRect(210, 530, 89, 25))
+        self.pyramid_button.setObjectName("pyramid_button")
         self.thor_button = QtWidgets.QPushButton(self.centralwidget)
         self.thor_button.setGeometry(QtCore.QRect(310, 530, 89, 25))
         self.thor_button.setObjectName("thor_button")
@@ -82,7 +82,7 @@ class Ui_main_window(object):
         main_window.setWindowTitle(_translate("main_window", "OpenGL PyQT Playground"))
         self.box_button.setText(_translate("main_window", "Box"))
         self.sphere_button.setText(_translate("main_window", "Sphere"))
-        self.pyramyd_button.setText(_translate("main_window", "Pyramid"))
+        self.pyramid_button.setText(_translate("main_window", "Pyramid"))
         self.thor_button.setText(_translate("main_window", "Thor"))
         self.cylinder_button.setText(_translate("main_window", "Cylinder"))
         self.reset_button.setText(_translate("main_window", "Reset"))

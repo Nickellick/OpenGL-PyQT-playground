@@ -62,7 +62,7 @@
      <string>Sphere</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pyramyd_button">
+   <widget class="QPushButton" name="pyramid_button">
     <property name="geometry">
      <rect>
       <x>210</x>

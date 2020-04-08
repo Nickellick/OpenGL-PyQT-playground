@@ -1,9 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
-import OpenGL.GLU as glu
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QPoint, QSize, Qt, pyqtSignal
-from PyQt5.QtGui import QColor
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 
 import sys
 import math
@@ -25,12 +23,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.glWidget = GLWidget(self.ui.centralwidget)
         self.glWidget.setGeometry(self.glGeometry)
         self.glWidget.setObjectName(self.glObjectName)
-        # self.glWidget.
 
-        # self.glWidget.setGeometry(QRect(0, 0, 811, 521))
-        # self.glWidget.setObjectName("opengl_widget")
-        self.ui.opengl_widget = self.glWidget
-
+        self.ui.box_button.clicked.connect(lambda: self.glWidget.setObject('box'))
+        self.ui.sphere_button.clicked.connect(lambda: self.glWidget.setObject('sphere', r=1, step=100))
+        self.ui.pyramid_button.clicked.connect(lambda: self.glWidget.setObject('pyramid'))
+        self.ui.thor_button.clicked.connect(lambda: self.glWidget.setObject('thor', ir=0.5, step=100))
+        self.ui.cylinder_button.clicked.connect(lambda: self.glWidget.setObject('cylinder', r=1, h = 0.5, step=0.01))
+        self.ui.reset_button.clicked.connect(self.glWidget.resetPosition)
         # self.ui.exit_button.clicked.connect(self.exit_button_on_click)
 
     def exit_button_on_click(self):
@@ -45,6 +44,13 @@ class GLWidget(QtWidgets.QOpenGLWidget):
 
     def __init__(self, parent):
         # super(GLWidget, self).__init__(parent)
+        self.objects = {
+            'box': self.makeBox,
+            'sphere': self.makeSphere,
+            'pyramid': self.makePyramid,
+            'thor': self.makeThor,
+            'cylinder': self.makeCylinder
+        }
         QtWidgets.QOpenGLWidget.__init__(self, parent)
         self.object = 0
         self.xRot = 0
@@ -54,7 +60,28 @@ class GLWidget(QtWidgets.QOpenGLWidget):
 
         self.lastPos = QPoint()
 
-        # self.setMinimumSize(self.width(), self.height())
+        self.object = None
+
+    def getObjectsNames(self):
+        return self.objects.keys()
+
+    def setObject(self, objectName, **kwargs):
+        if objectName == 'sphere':
+            r = kwargs['r']
+            step = kwargs['step']
+            self.object = self.objects[objectName](r, step)
+        elif objectName == 'thor':
+            ir = kwargs['ir']
+            step = kwargs['step']
+            self.object = self.objects[objectName](ir, step)
+        elif objectName == 'cylinder':
+            r = kwargs['r']
+            h = kwargs['h']
+            step = kwargs['step']
+            self.object = self.objects[objectName](r, h, step)
+        else:
+            self.object = self.objects[objectName]()
+        self.update()
 
     def makeBox(self):
         drawBoxList = glGenLists(1)
@@ -115,23 +142,22 @@ class GLWidget(QtWidgets.QOpenGLWidget):
 
         return drawBoxList
 
-    def makeSphere(self, r, lats, longs):
+    def makeSphere(self, r, step):
         drawSphereList = glGenLists(1)
         glNewList(drawSphereList, GL_COMPILE)
-        for i in range(lats + 1):
-            lat0 = math.pi * (-0.5 + i - 1 / lats)
+        for i in range(step + 1):
+            lat0 = math.pi * (-0.5 + i - 1 / step)
             z0 = math.sin(lat0)
             zr0 = math.cos(lat0)
 
-            lat1 = math.pi * (-0.5 + i / lats)
+            lat1 = math.pi * (-0.5 + i / step)
             z1 = math.sin(lat1)
             zr1 = math.cos(lat1)
             glBegin(GL_QUAD_STRIP)
-            for j in range(longs + 1):
-                lng = 2 * math.pi * (j - 1) / longs
+            for j in range(step + 1):
+                lng = 2 * math.pi * (j - 1) / step
                 x = math.cos(lng)
                 y = math.sin(lng)
-
                 glNormal3f(x * zr0, y * zr0, z0)
                 glColor3f(i % 2, 1, 0)
                 glVertex3f(r * x * zr0, r * y * zr0, r * z0)
@@ -142,20 +168,20 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         glEndList()
         return drawSphereList
 
-    def makeThor(self, internal_radius, numc, numt):
+    def makeThor(self, internal_radius, step):
         drawThorList = glGenLists(1)
         glNewList(drawThorList, GL_COMPILE)
-        for i in range(numc + 1):
+        for i in range(step + 1):
             glBegin(GL_QUAD_STRIP)
-            for j in range(numt + 1):
+            for j in range(step + 1):
                 k = 1
                 while k >= 0:
-                    s = (i + k) % numc + 0.5
-                    t = j % numt
+                    s = (i + k) % step + 0.5
+                    t = j % step
                     radius = 1 - internal_radius
-                    x = (1 + radius * math.cos(s * 2 * math.pi / numc)) * math.sin(t * 2 * math.pi / numt)
-                    y = (1 + radius * math.cos(s * 2 * math.pi / numc)) * math.cos(t * 2 * math.pi / numt)
-                    z = radius * math.sin(s * 2 * math.pi / numc)
+                    x = (1 + radius * math.cos(s * 2 * math.pi / step)) * math.sin(t * 2 * math.pi / step)
+                    y = (1 + radius * math.cos(s * 2 * math.pi / step)) * math.cos(t * 2 * math.pi / step)
+                    z = radius * math.sin(s * 2 * math.pi / step)
                     glVertex3f(x, y, z)
                     k -= 1
             glEnd()
@@ -283,7 +309,8 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         glMatrixMode(GL_MODELVIEW)
 
     def initializeGL(self):
-        self.object = self.makeCylinder(0.5, 1, 0.01)
+        self.setObject('cylinder', r=0.5, h=1, step=0.01)
+        # self.object = self.objects['box']()
         glEnable(GL_DEPTH_TEST)
         glViewport(0, 0, self.width(), self.height())
         glMatrixMode(GL_PROJECTION)
