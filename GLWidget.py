@@ -76,6 +76,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         glNewList(drawBoxList, GL_COMPILE)
         # Front
         glBegin(GL_POLYGON)
+        glNormal(0, 0, -1)
         glVertex3f(-0.5, -0.5, -0.5)
         glVertex3f(-0.5, 0.5, -0.5)
         glVertex3f(0.5, 0.5, -0.5)
@@ -85,6 +86,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Back
         glBegin(GL_POLYGON)
         glColor3f(1.0, 1.0, 1.0)
+        glNormal(0, 0, 1)
         glVertex3f(0.5, -0.5, 0.5)
         glVertex3f(0.5, 0.5, 0.5)
         glVertex3f(-0.5, 0.5, 0.5)
@@ -94,6 +96,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Right
         glBegin(GL_POLYGON)
         glColor3f(1.0, 0.0, 1.0)
+        glNormal(1, 0, 0)
         glVertex3f(0.5, -0.5, -0.5)
         glVertex3f(0.5, 0.5, -0.5)
         glVertex3f(0.5, 0.5, 0.5)
@@ -103,6 +106,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Left
         glBegin(GL_POLYGON)
         glColor3f(0.0, 1.0, 0.0)
+        glNormal(-1, 0, 0)
         glVertex3f(-0.5, -0.5, 0.5)
         glVertex3f(-0.5, 0.5, 0.5)
         glVertex3f(-0.5, 0.5, -0.5)
@@ -112,6 +116,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Top
         glBegin(GL_POLYGON)
         glColor3f(0.0, 0.0, 1.0)
+        glNormal(0, 1, 0)
         glVertex3f(0.5, 0.5, 0.5)
         glVertex3f(0.5, 0.5, -0.5)
         glVertex3f(-0.5, 0.5, -0.5)
@@ -120,6 +125,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         #
         # Bottom
         glBegin(GL_POLYGON)
+        glNormal(0, -1, 0)
         glColor3f(1.0, 0.0, 0.0)
         glVertex3f(0.5, -0.5, -0.5)
         glVertex3f(0.5, -0.5, 0.5)
@@ -170,6 +176,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
                     x = (1 + radius * math.cos(s * 2 * math.pi / step)) * math.sin(t * 2 * math.pi / step)
                     y = (1 + radius * math.cos(s * 2 * math.pi / step)) * math.cos(t * 2 * math.pi / step)
                     z = radius * math.sin(s * 2 * math.pi / step)
+                    glNormal(x, y, z)
                     glVertex3f(x, y, z)
                     k -= 1
             glEnd()
@@ -182,6 +189,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Face 1
         glBegin(GL_POLYGON)
         glColor3f(1.0, 0.0, 1.0)
+        glNormal(0, 0.5, 0.5)
         glVertex3f(0.5, 0.5, 0)
         glVertex3f(-0.5, 0.5, 0)
         glVertex3f(0, 0, 0.5)
@@ -190,6 +198,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Face 2
         glBegin(GL_POLYGON)
         glColor3f(1.0, 1.0, 1.0)
+        glNormal(-0.5, 0, 0.5)
         glVertex3f(-0.5, 0.5, 0)
         glVertex3f(-0.5, -0.5, 0)
         glVertex3f(0, 0, 0.5)
@@ -198,6 +207,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Face 3
         glBegin(GL_POLYGON)
         glColor3f(0.0, 0.0, 1.0)
+        glNormal(0, -0.5, 0.5)
         glVertex3f(-0.5, -0.5, 0)
         glVertex3f(0.5, -0.5, 0)
         glVertex3f(0, 0, 0.5)
@@ -206,6 +216,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Face 4
         glBegin(GL_POLYGON)
         glColor3f(0.0, 0.5, 1.0)
+        glNormal(0.5, 0, 0.5)
         glVertex3f(0.5, -0.5, 0)
         glVertex3f(0.5, 0.5, 0)
         glVertex3f(0, 0, 0.5)
@@ -214,6 +225,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Bottom
         glBegin(GL_POLYGON)
         glColor3f(1.0, 0.0, 0.0)
+        glNormal(0, 0, -1)
         glVertex3f(-0.5, -0.5, 0.0)
         glVertex3f(0.5, -0.5, 0.0)
         glVertex3f(0.5, 0.5, 0.0)
@@ -230,10 +242,11 @@ class GLWidget(QtWidgets.QOpenGLWidget):
             glEnable(GL_COLOR_MATERIAL)
 
             glShadeModel(GL_SMOOTH)
+            #TODO ShadeModel checkbox
 
             glMaterialfv(GL_FRONT, GL_SPECULAR, 1, 1, 1, 1)
             glMaterialfv(GL_FRONT, GL_SHININESS, 50)
-            glLightfv(GL_LIGHT0, GL_POSITION, 1, 1, 1, 0)
+            glLightfv(GL_LIGHT0, GL_POSITION, 0.5, -1, -0.2, 0)
 
             # glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
             # glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE)
@@ -280,7 +293,9 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         while angle < 2 * math.pi:
             x = radius * math.cos(angle)
             y = radius * math.sin(angle)
+            glNormal3f(x, y, height // 2)
             glVertex3f(x, y, height // 2)
+            glNormal3f(x, y, -height // 2)
             glVertex3f(x, y, -height // 2)
             angle += step
         glVertex3f(radius, 0, height // 2)
@@ -293,6 +308,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         while angle < 2 * math.pi:
             x = radius * math.cos(angle)
             y = radius * math.sin(angle)
+            glNormal3f(x, y, height // 2)
             glVertex3f(x, y, height // 2)
             angle += step
         glVertex3f(radius, 0, height // 2)
@@ -302,6 +318,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         while angle < 2 * math.pi:
             x = radius * math.cos(angle)
             y = radius * math.sin(angle)
+            glNormal3f(x, y, -height // 2)
             glVertex3f(x, y, -height // 2)
             angle += step
         glVertex3f(radius, 0, -height // 2)
