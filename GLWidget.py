@@ -21,15 +21,24 @@ class GLWidget(QtWidgets.QOpenGLWidget):
             'cylinder': self.makeCylinder
         }
         QtWidgets.QOpenGLWidget.__init__(self, parent)
-        self.object = 0
+        # Positioning
         self.xRot = 0
         self.yRot = 0
         self.zRot = 0
-        self.orthoSize = 0.5
+        self.orthoSize = 1
+
+        self.invertedWheel = False
+        self.mouseWheelSensitivity = 5
 
         self.lastPos = QPoint()
 
         self.object = None
+
+    def setMouseWheelInvertion(self, value: bool) -> None:
+        self.invertedWheel = value
+
+    def setMouseWheelSensitivity(self, value: int) -> None:
+        self.mouseWheelSensitivity = value
 
     def getObjectsNames(self):
         return self.objects.keys()
@@ -267,7 +276,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         self.xRot = 0
         self.yRot = 0
         self.zRot = 0
-        self.orthoSize = 0.5
+        self.orthoSize = 1
         self.update()
 
     def resizeGL(self, width, height):
@@ -301,7 +310,8 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         self.lastPos = event.pos()
 
     def wheelEvent(self, event):
-        delta = event.angleDelta().y() / 1200
+        delta = event.angleDelta().y() / (120 * self.mouseWheelSensitivity)
+        delta = -delta if self.invertedWheel else delta
         print(f'Wheel: {delta}')
         self.setOrtho(self.orthoSize + delta)
 
@@ -311,12 +321,13 @@ class GLWidget(QtWidgets.QOpenGLWidget):
             self.orthoSize = value
             # self.orthoChanged.emit(value)
             self.update()
+            print(value)
 
     def normalizeOrtho(self, value):
-        if value < 0.1:
-            return 0.1
-        if value > 1:
-            return 1
+        if value < 0.05:
+            return 0.05
+        if value > 2:
+            return 2
         return value
 
     def print_angles(self):
