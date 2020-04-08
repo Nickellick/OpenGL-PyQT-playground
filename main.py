@@ -31,7 +31,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.mouse_wheel_check_box.clicked.connect(
             lambda: self.glWidget.setMouseWheelInvertion(self.ui.mouse_wheel_check_box.isChecked()))
         self.ui.mouse_wheel_slider.sliderReleased.connect(
-            lambda: self.glWidget.setMouseWheelSensitivity((self.ui.mouse_wheel_slider.value()) // 10))
+            lambda: self.glWidget.setMouseWheelSensitivity(10 - (self.ui.mouse_wheel_slider.value()) // 10))
+        self.ui.rotation_slider.sliderReleased.connect(
+            lambda: self.glWidget.setRotationSensitivity(10 - (self.ui.rotation_slider.value()) // 10))
 
 
 if __name__ == '__main__':

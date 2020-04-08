@@ -29,6 +29,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
 
         self.invertedWheel = False
         self.mouseWheelSensitivity = 5
+        self.rotationSensitivity = 5
 
         self.lastPos = QPoint()
 
@@ -39,6 +40,9 @@ class GLWidget(QtWidgets.QOpenGLWidget):
 
     def setMouseWheelSensitivity(self, value: int) -> None:
         self.mouseWheelSensitivity = value
+
+    def setRotationSensitivity(self, value: int) -> None:
+        self.rotationSensitivity = value
 
     def getObjectsNames(self):
         return self.objects.keys()
@@ -224,9 +228,9 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         glTranslated(0.0, 0.0, -10.0)
         glColor3f(1.0, 1.5, 0.0)
 
-        glRotated(self.xRot / 16.0, 1.0, 0.0, 0.0)
-        glRotated(self.yRot / 16.0, 0.0, 1.0, 0.0)
-        glRotated(self.zRot / 16.0, 0.0, 0.0, 1.0)
+        glRotated(self.xRot / self.rotationSensitivity, 1.0, 0.0, 0.0)
+        glRotated(self.yRot / self.rotationSensitivity, 0.0, 1.0, 0.0)
+        glRotated(self.zRot / self.rotationSensitivity, 0.0, 0.0, 1.0)
 
         glCallList(self.object)
 

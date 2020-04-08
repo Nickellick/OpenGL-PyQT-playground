@@ -200,16 +200,16 @@
      </rect>
     </property>
     <property name="minimum">
-     <number>0</number>
+     <number>10</number>
     </property>
     <property name="maximum">
-     <number>100</number>
+     <number>90</number>
     </property>
     <property name="singleStep">
      <number>10</number>
     </property>
     <property name="value">
-     <number>0</number>
+     <number>50</number>
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
