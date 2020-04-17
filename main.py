@@ -10,7 +10,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-
         self.ui = Ui_main_window()
 
         self.ui.setupUi(self)
@@ -25,7 +24,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.sphere_button.clicked.connect(lambda: self.glWidget.setObject('sphere', r=1, step=100))
         self.ui.pyramid_button.clicked.connect(lambda: self.glWidget.setObject('pyramid'))
         self.ui.thor_button.clicked.connect(lambda: self.glWidget.setObject('thor', ir=0.5, step=100))
-        self.ui.cylinder_button.clicked.connect(lambda: self.glWidget.setObject('cylinder', r=1, h=0.5, step=1))
+        self.ui.cylinder_button.clicked.connect(lambda: self.glWidget.setObject('cylinder', r=1, h=0.5, step=100))
+        self.ui.csg_button.clicked.connect(lambda: self.glWidget.setObject('csg', operation='a_and_b'))
         self.ui.reset_button.clicked.connect(self.glWidget.resetPosition)
 
         self.ui.mouse_wheel_check_box.clicked.connect(

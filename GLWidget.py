@@ -20,6 +20,14 @@ class GLWidget(QtWidgets.QOpenGLWidget):
             'thor': self.makeThor,
             'cylinder': self.makeCylinder
         }
+
+        self.csg_objects = {
+            'a_or_b': self.makeAorB,
+            'a_and_b': self.makeAandB,
+            # 'a_not_b': self.makeAnotB,
+            # 'b_not_a': self.makeBnotA
+        }
+
         QtWidgets.QOpenGLWidget.__init__(self, parent)
         # Positioning
         self.xRot = 0
@@ -67,10 +75,55 @@ class GLWidget(QtWidgets.QOpenGLWidget):
             h = kwargs['h']
             step = kwargs['step']
             self.object = self.objects[objectName](r, h, step)
+        elif objectName == 'csg':
+            operation = kwargs['operation']
+            self.object = self.csg_objects[operation](self.makeBox(), self.makeCylinder(1, 0.5, 100))
         else:
             self.object = self.objects[objectName]()
         self.update()
 
+    def makeAorB(self, objA, objB):
+        drawAorBList = glGenLists(1)
+        glNewList(drawAorBList, GL_COMPILE)
+        glCallList(objA)
+        glCallList(objB)
+        glEndList()
+        return drawAorBList
+
+    def makeAandB(self, objA, objB):
+        drawAandBList = glGenLists(1)
+        glNewList(drawAandBList, GL_COMPILE)
+        glEnable(GL_CULL_FACE)
+        glEnable(GL_DEPTH_TEST)
+        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE)
+        glCullFace(GL_BACK)
+
+        glCallList(objA)
+
+        glDepthMask(GL_FALSE)
+        glEnable(GL_STENCIL_TEST)
+        glStencilOp(GL_KEEP, GL_KEEP, GL_INCR)
+        glStencilFunc(GL_ALWAYS, 0, 0)
+
+        glCallList(objB)
+
+        glStencilOp(GL_KEEP, GL_KEEP, GL_DECR)
+        glCullFace(GL_FRONT)
+
+        glCallList(objB)
+
+        glDepthMask(GL_TRUE)
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE)
+        glStencilFunc(GL_NOTEQUAL, 0, 1)
+        glDisable(GL_DEPTH_TEST)
+        glCullFace(GL_BACK)
+
+        glCallList(objA)
+
+        glDisable(GL_STENCIL_TEST)
+
+        glEndList()
+        return drawAandBList
     def makeBox(self):
         drawBoxList = glGenLists(1)
         glNewList(drawBoxList, GL_COMPILE)
@@ -247,19 +300,6 @@ class GLWidget(QtWidgets.QOpenGLWidget):
             glMaterialfv(GL_FRONT, GL_SPECULAR, 1, 1, 1, 1)
             glMaterialfv(GL_FRONT, GL_SHININESS, 50)
             glLightfv(GL_LIGHT0, GL_POSITION, 0.5, -1, -0.2, 0)
-
-            # glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
-            # glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE)
-            # glLightfv(GL_LIGHT0, GL_DIFFUSE, 0.7, 0.7, 0.7)
-            # glLightfv(GL_LIGHT0, GL_AMBIENT, 0.1, 0.1, 0.1)
-            # # glLightfv(GL_LIGHT0, GL_SPECULAR, 0.1, 0.1, 0.1)
-            # # glLightfv(GL_LIGHT0, GL_POSITION, 0, 1.5, 1, 0)
-            # # glLightf(GL_LIGHT0, GL_AMBIENT, 0, 0, 0, 1)
-            # # glLightf(GL_LIGHT0, GL_DIFFUSE, 1, 1, 1, 1)
-            # # glLightf(GL_LIGHT0, GL_SPECULAR, 1, 1, 1, 1)
-            # # glLightModelfv(GL_LIGHT_MODEL_AMBIENT, 0.2, 0.2, 0.2, 1)
-            # # glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, 1, 1, 1, 1)
-            # # glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, 0, 0, 0, 1)
         else:
             glDisable(GL_LIGHTING)
             glDisable(GL_LIGHT0)
