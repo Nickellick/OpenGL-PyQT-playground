@@ -25,7 +25,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.sphere_button.clicked.connect(lambda: self.glWidget.setObject('sphere', r=1, step=100))
         self.ui.pyramid_button.clicked.connect(lambda: self.glWidget.setObject('pyramid'))
         self.ui.thor_button.clicked.connect(lambda: self.glWidget.setObject('thor', ir=0.5, step=100))
-        self.ui.cylinder_button.clicked.connect(lambda: self.glWidget.setObject('cylinder', r=1, h=0.5, step=0.01))
+        self.ui.cylinder_button.clicked.connect(lambda: self.glWidget.setObject('cylinder', r=1, h=0.5, step=1))
         self.ui.reset_button.clicked.connect(self.glWidget.resetPosition)
 
         self.ui.mouse_wheel_check_box.clicked.connect(
@@ -34,6 +34,8 @@ class MainWindow(QtWidgets.QMainWindow):
             lambda: self.glWidget.setMouseWheelSensitivity(10 - (self.ui.mouse_wheel_slider.value()) // 10))
         self.ui.rotation_slider.sliderReleased.connect(
             lambda: self.glWidget.setRotationSensitivity(10 - (self.ui.rotation_slider.value()) // 10))
+        self.ui.lighting_checkbox.clicked.connect(
+            lambda: self.glWidget.setGLlighting(self.ui.lighting_checkbox.isChecked()))
 
 
 if __name__ == '__main__':

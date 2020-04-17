@@ -1,3 +1,4 @@
 pip>=20
 PyQt5==5.14.1
+PyQt5-stubs==5.14.1
 PyOpenGL==3.1.5

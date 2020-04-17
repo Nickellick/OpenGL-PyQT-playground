@@ -31,9 +31,15 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         self.mouseWheelSensitivity = 5
         self.rotationSensitivity = 5
 
+        self.GLlighting = False
+
         self.lastPos = QPoint()
 
         self.object = None
+
+    def setGLlighting(self, value: bool) -> None:
+        self.GLlighting = value
+        self.update()
 
     def setMouseWheelInvertion(self, value: bool) -> None:
         self.invertedWheel = value
@@ -70,6 +76,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         glNewList(drawBoxList, GL_COMPILE)
         # Front
         glBegin(GL_POLYGON)
+        glNormal(0, 0, -1)
         glVertex3f(-0.5, -0.5, -0.5)
         glVertex3f(-0.5, 0.5, -0.5)
         glVertex3f(0.5, 0.5, -0.5)
@@ -79,6 +86,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Back
         glBegin(GL_POLYGON)
         glColor3f(1.0, 1.0, 1.0)
+        glNormal(0, 0, 1)
         glVertex3f(0.5, -0.5, 0.5)
         glVertex3f(0.5, 0.5, 0.5)
         glVertex3f(-0.5, 0.5, 0.5)
@@ -88,6 +96,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Right
         glBegin(GL_POLYGON)
         glColor3f(1.0, 0.0, 1.0)
+        glNormal(1, 0, 0)
         glVertex3f(0.5, -0.5, -0.5)
         glVertex3f(0.5, 0.5, -0.5)
         glVertex3f(0.5, 0.5, 0.5)
@@ -97,6 +106,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Left
         glBegin(GL_POLYGON)
         glColor3f(0.0, 1.0, 0.0)
+        glNormal(-1, 0, 0)
         glVertex3f(-0.5, -0.5, 0.5)
         glVertex3f(-0.5, 0.5, 0.5)
         glVertex3f(-0.5, 0.5, -0.5)
@@ -106,6 +116,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Top
         glBegin(GL_POLYGON)
         glColor3f(0.0, 0.0, 1.0)
+        glNormal(0, 1, 0)
         glVertex3f(0.5, 0.5, 0.5)
         glVertex3f(0.5, 0.5, -0.5)
         glVertex3f(-0.5, 0.5, -0.5)
@@ -114,6 +125,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         #
         # Bottom
         glBegin(GL_POLYGON)
+        glNormal(0, -1, 0)
         glColor3f(1.0, 0.0, 0.0)
         glVertex3f(0.5, -0.5, -0.5)
         glVertex3f(0.5, -0.5, 0.5)
@@ -164,6 +176,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
                     x = (1 + radius * math.cos(s * 2 * math.pi / step)) * math.sin(t * 2 * math.pi / step)
                     y = (1 + radius * math.cos(s * 2 * math.pi / step)) * math.cos(t * 2 * math.pi / step)
                     z = radius * math.sin(s * 2 * math.pi / step)
+                    glNormal(x, y, z)
                     glVertex3f(x, y, z)
                     k -= 1
             glEnd()
@@ -176,6 +189,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Face 1
         glBegin(GL_POLYGON)
         glColor3f(1.0, 0.0, 1.0)
+        glNormal(0, 0.5, 0.5)
         glVertex3f(0.5, 0.5, 0)
         glVertex3f(-0.5, 0.5, 0)
         glVertex3f(0, 0, 0.5)
@@ -184,6 +198,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Face 2
         glBegin(GL_POLYGON)
         glColor3f(1.0, 1.0, 1.0)
+        glNormal(-0.5, 0, 0.5)
         glVertex3f(-0.5, 0.5, 0)
         glVertex3f(-0.5, -0.5, 0)
         glVertex3f(0, 0, 0.5)
@@ -192,6 +207,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Face 3
         glBegin(GL_POLYGON)
         glColor3f(0.0, 0.0, 1.0)
+        glNormal(0, -0.5, 0.5)
         glVertex3f(-0.5, -0.5, 0)
         glVertex3f(0.5, -0.5, 0)
         glVertex3f(0, 0, 0.5)
@@ -200,6 +216,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Face 4
         glBegin(GL_POLYGON)
         glColor3f(0.0, 0.5, 1.0)
+        glNormal(0.5, 0, 0.5)
         glVertex3f(0.5, -0.5, 0)
         glVertex3f(0.5, 0.5, 0)
         glVertex3f(0, 0, 0.5)
@@ -208,6 +225,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # Bottom
         glBegin(GL_POLYGON)
         glColor3f(1.0, 0.0, 0.0)
+        glNormal(0, 0, -1)
         glVertex3f(-0.5, -0.5, 0.0)
         glVertex3f(0.5, -0.5, 0.0)
         glVertex3f(0.5, 0.5, 0.0)
@@ -218,6 +236,34 @@ class GLWidget(QtWidgets.QOpenGLWidget):
 
     def paintGL(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        if self.GLlighting:
+            glEnable(GL_LIGHTING)
+            glEnable(GL_LIGHT0)
+            glEnable(GL_COLOR_MATERIAL)
+
+            glShadeModel(GL_SMOOTH)
+            #TODO ShadeModel checkbox
+
+            glMaterialfv(GL_FRONT, GL_SPECULAR, 1, 1, 1, 1)
+            glMaterialfv(GL_FRONT, GL_SHININESS, 50)
+            glLightfv(GL_LIGHT0, GL_POSITION, 0.5, -1, -0.2, 0)
+
+            # glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
+            # glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE)
+            # glLightfv(GL_LIGHT0, GL_DIFFUSE, 0.7, 0.7, 0.7)
+            # glLightfv(GL_LIGHT0, GL_AMBIENT, 0.1, 0.1, 0.1)
+            # # glLightfv(GL_LIGHT0, GL_SPECULAR, 0.1, 0.1, 0.1)
+            # # glLightfv(GL_LIGHT0, GL_POSITION, 0, 1.5, 1, 0)
+            # # glLightf(GL_LIGHT0, GL_AMBIENT, 0, 0, 0, 1)
+            # # glLightf(GL_LIGHT0, GL_DIFFUSE, 1, 1, 1, 1)
+            # # glLightf(GL_LIGHT0, GL_SPECULAR, 1, 1, 1, 1)
+            # # glLightModelfv(GL_LIGHT_MODEL_AMBIENT, 0.2, 0.2, 0.2, 1)
+            # # glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, 1, 1, 1, 1)
+            # # glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, 0, 0, 0, 1)
+        else:
+            glDisable(GL_LIGHTING)
+            glDisable(GL_LIGHT0)
+            glDisable(GL_COLOR_MATERIAL)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         glOrtho(-self.orthoSize, +self.orthoSize, +self.orthoSize, -self.orthoSize, 2.0, 15.0)
@@ -236,7 +282,8 @@ class GLWidget(QtWidgets.QOpenGLWidget):
 
         # glFlush()
 
-    def makeCylinder(self, radius: float, height: float, step: float):
+    def makeCylinder(self, radius: float, height: float, step: int):
+        step = 1 / step
         drawCylinderList = glGenLists(1)
         glNewList(drawCylinderList, GL_COMPILE)
         # Draw the tube
@@ -246,7 +293,9 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         while angle < 2 * math.pi:
             x = radius * math.cos(angle)
             y = radius * math.sin(angle)
+            glNormal3f(x, y, height // 2)
             glVertex3f(x, y, height // 2)
+            glNormal3f(x, y, -height // 2)
             glVertex3f(x, y, -height // 2)
             angle += step
         glVertex3f(radius, 0, height // 2)
@@ -259,6 +308,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         while angle < 2 * math.pi:
             x = radius * math.cos(angle)
             y = radius * math.sin(angle)
+            glNormal3f(x, y, height // 2)
             glVertex3f(x, y, height // 2)
             angle += step
         glVertex3f(radius, 0, height // 2)
@@ -268,6 +318,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         while angle < 2 * math.pi:
             x = radius * math.cos(angle)
             y = radius * math.sin(angle)
+            glNormal3f(x, y, -height // 2)
             glVertex3f(x, y, -height // 2)
             angle += step
         glVertex3f(radius, 0, -height // 2)
@@ -291,7 +342,7 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         glMatrixMode(GL_MODELVIEW)
 
     def initializeGL(self):
-        self.setObject('cylinder', r=0.5, h=1, step=0.01)
+        self.setObject('cylinder', r=0.5, h=1, step=100)
         # self.object = self.objects['box']()
         glEnable(GL_DEPTH_TEST)
         glViewport(0, 0, self.width(), self.height())
